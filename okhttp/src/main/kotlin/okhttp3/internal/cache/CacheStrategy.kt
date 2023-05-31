@@ -207,10 +207,14 @@ class CacheStrategy internal constructor(
           conditionValue = lastModifiedString
         }
 
+        // Ne pas ajouter volontairement le header "If-Modified-Since" après détection d'un header date qui n'est pas "Last-Modified".
+        // Cela pose problème sur les F5, cf incident INC325000.
+        // Le F5 ne gère pas bien le "If-Modified-Since" alors qu'il n'a pas de "Last-Modified", il renvoie un 304 NOT MODIFIED au lieu d'une 200 par défaut.
+        /*
         servedDate != null -> {
           conditionName = "If-Modified-Since"
           conditionValue = servedDateString
-        }
+        }*/
 
         else -> return CacheStrategy(request, null) // No condition! Make a regular request.
       }
